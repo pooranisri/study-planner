@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Study Planner</title>
+<style>
+body { font-family: sans-serif; }
+#planner { display: flex; flex-wrap: wrap; }
+.task { border: 1px solid #ccc; padding: 10px; margin: 5px; width: 200px; position: relative; }
+.task input[type="checkbox"] { position: absolute; top: 5px; right: 5px; }
+.priority-high { background-color: #fdd; }
+.priority-medium { background-color: #ffd; }
+.priority-low { background-color: #dfd; }
+.completed { text-decoration: line-through; opacity: 0.5; }
+#new-task-form { margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Study Planner</h1>
+
+<div id="planner"></div>
+
+<div id="new-task-form">
+  <h2>Add New Task</h2>
+  <input type="text" id="task-name" placeholder="Task Name"><br>
+  <select id="task-priority">
+    <option value="low">Low</option>
+    <option value="medium">Medium</option>
+    <option value="high">High</option>
+  </select><br>
+  <input type="date" id="task-deadline"><br>
+  <button onclick="addTask()">Add Task</button>
+</div>
+
+
+<script>
+let tasks = [];
+
+function addTask() {
+  const name = document.getElementById('task-name').value;
+  const priority = document.getElementById('task-priority').value;
+  const deadline = document.getElementById('task-deadline').value;
+
+  const task = {
+    name: name,
+    priority: priority,
+    deadline: deadline,
+    completed: false
+  };
+
+  tasks.push(task);
+  renderTasks();
+  // Clear the form
+  document.getElementById('task-name').value = '';
+  document.getElementById('task-deadline').value = '';
+
+}
+
+
+function renderTasks() {
+  const planner = document.getElementById('planner');
+  planner.innerHTML = '';
+
+  tasks.forEach(task => {
+    const taskDiv = document.createElement('div');
+    taskDiv.classList.add('task');
+    taskDiv.classList.add('priority-' + task.priority);
+    if (task.completed) {
+      taskDiv.classList.add('completed');
+    }
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = task.completed;
+    checkbox.addEventListener('change', () => {
+      task.completed = checkbox.checked;
+      renderTasks(); // Re-render to show strikethrough
+    });
+    taskDiv.appendChild(checkbox);
+
+
+    taskDiv.innerHTML += `<h3>${task.name}</h3>`;
+    taskDiv.innerHTML += `<p>Deadline: ${task.deadline}</p>`;
+
+    planner.appendChild(taskDiv);
+  });
+}
+
+// Initial rendering (in case there are tasks already)
+renderTasks();
+
+// Example usage (you would typically load this from storage):
+tasks.push({ name: 'Study Chapter 3', priority: 'high', deadline: '2024-12-20', completed: false });
+tasks.push({ name: 'Review notes', priority: 'medium', deadline: '2024-12-22', completed: true });
+renderTasks();
+
+// Simple alert-based reminders (in a real app, use notifications or a calendar integration)
+tasks.forEach(task => {
+  if (task.deadline) {
+    // Basic reminder - replace with proper notification logic
+    setTimeout(() => {
+      alert(`Reminder: ${task.name} is due on ${task.deadline}`);
+    }, new Date(task.deadline) - Date.now());  // Warning: might not be accurate across time zones/daylight savings
+  }
+});
+
+
+
+
+</script>
+
+</body>
+</html>
